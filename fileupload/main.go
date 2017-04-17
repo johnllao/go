@@ -10,6 +10,7 @@ import "os"
 import "runtime"
 
 var port = flag.Int("port", 8080, "http port")
+var publicDir = flag.String("public", "public/", "public directory path")
 
 func main() {
 	log.Printf("starting fileupload")
@@ -19,7 +20,7 @@ func main() {
 	log.Printf("port : %v", *port)
 
 	
-	fileHandler := http.StripPrefix("/public/", http.FileServer(http.Dir("../public/")))
+	fileHandler := http.StripPrefix("/public/", http.FileServer(http.Dir(*publicDir)))
 
 	mux := http.NewServeMux()
 	mux.Handle("/public/", fileHandler)
