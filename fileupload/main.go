@@ -18,9 +18,14 @@ func main() {
 	log.Printf("args")
 	log.Printf("port : %v", *port)
 
+	
+	fileHandler := http.StripPrefix("/public/", http.FileServer(http.Dir("../public/")))
+
 	mux := http.NewServeMux()
+	mux.Handle("/public/", fileHandler)
 	mux.HandleFunc("/stats", stats)
 	mux.HandleFunc("/upload", upload)
+	mux.HandleFunc("/", index)
 
 	server := http.Server{}
 	server.Addr = fmt.Sprintf(":%v", *port)
@@ -52,13 +57,21 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "Invalid http method. POST is expected")
 		return
 	}
+	content, _, err := r.FormFile("file")
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintln(w, err.Error())
+		return
+	}
+	defer content.Close()
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := ioutil.ReadAll(content)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintln(w, err.Error())
 		return
 	}
 
-	fmt.Fprintf(w, "size : %v", len(body))
+	fmt.Fprintf(w, "size : %v \n", len(body))
+	fmt.Fprintln(w, string(body))
 }
