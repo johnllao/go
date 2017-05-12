@@ -1,25 +1,20 @@
 package main
 
-import "encoding/csv"
 import "flag"
-import "io"
-import "log"
 import "net/http"
-import "strconv"
+import "log"
+import "regexp"
+import "sync"
+import "fmt"
 
-// Company represents the company details
-type Company struct {
-	Symbol 		string
-	Name		string
-	LastSale	float32
-	MarketCap   float64
-	Sector      string
-	Industry    string	
+var symURL = "http://www.batstrading.com/market_data/symbol_listing/csv"
+
+type store struct {
+	sync.Mutex
+	m map[string]Company
 }
 
-var symbolArg = flag.String("sym", "", "symbol")
-var symURL = "http://www.batstrading.com/market_data/symbol_listing/csv"
-var companyListURL = "http://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=NASDAQ&render=download"
+var s = store{m:make(map[string]Company)}
 
 func init() {
 	flag.Parse()
@@ -27,88 +22,78 @@ func init() {
 
 func main() {
 
-	syms, err := downloadCompanyList()
-	if err != nil {
-		log.Print(err.Error())
-	}
+	download()
+	start()
+	
+	log.Println("Bye!")
+}
 
-	if comp, exists := syms[*symbolArg]; exists {
-		log.Print(*symbolArg, comp)
-	} else {
-		log.Printf("invalid symbol. symbol : %s", *symbolArg)
+func download() {
+
+	list := NewCompanyList().Download()
+
+	w := new(sync.WaitGroup)
+	q := make(chan int, 100)
+	for c := range list {
+		go save(q, w, c)
+	}
+	w.Wait()
+}
+
+func save(q chan int, w *sync.WaitGroup, c Company) {
+
+	q <- 1
+	w.Add(1)
+
+	s.Lock()
+	s.m[c.Symbol] = c
+	s.Unlock()
+
+	w.Done()
+	<-q
+}
+
+func start() {
+
+	router := http.NewServeMux()
+	router.HandleFunc("/symbols", symbols)
+	router.HandleFunc("/companies/", company)
+	server := http.Server{
+		Addr : ":8080",
+		Handler : router,
+	}
+	log.Println("http started")
+	err := server.ListenAndServe()
+	if err != nil {
+		log.Fatal("ERR", err.Error())
 	}
 }
 
-func downloadSymbols() (map[string]bool, error) {
+func company(w http.ResponseWriter, r *http.Request) {
 
-	log.Printf("downloading symbols. URL : %s", symURL)
-	
-	req, err := http.NewRequest("GET", symURL, nil)
+	w.Header().Set("Content-Type", "text/plain")
+
+	regex, err := regexp.Compile("^/companies/(\\w+)$")
 	if err != nil {
-		return nil, err
+		fmt.Fprintf(w, "ERR: %s \n", err.Error())
+		return
 	}
-
-	cli := http.Client{}
-	res, err := cli.Do(req)
-	if err != nil {
-		return nil, err
+	if !regex.MatchString(r.URL.Path) {
+		fmt.Fprintf(w, "ERR: Invalid URL \n")
+		return
 	}
-	
-	body := res.Body
-	defer body.Close()
-
-	syms := make(map[string]bool)
-	rdr := csv.NewReader(body)
-	for {
-		rec, err := rdr.Read()
-		if err == io.EOF {
-			break
-		}
-		syms[rec[0]] = true
-	}
-
-	return syms, nil
+	comp := s.m[regex.FindStringSubmatch(r.URL.Path)[1]]
+	fmt.Fprintf(w, "%s \n"               , comp.Symbol)
+	fmt.Fprintf(w, "Name       : %s   \n", comp.Name)
+	fmt.Fprintf(w, "Sector     : %s   \n", comp.Sector)
+	fmt.Fprintf(w, "Industry   : %s   \n", comp.Industry)
+	fmt.Fprintf(w, "Market Cap : %.2f \n", comp.MarketCap)
 }
 
-func downloadCompanyList() (map[string]Company, error) {
+func symbols(w http.ResponseWriter, r *http.Request) {
 
-	// columns
-	// Symbol, Name, LastSale, MarketCap, ADR TSO, IPOyear, Sector, Industry, Summary Quote
-	log.Printf("downloading company list. URL : %s", companyListURL)
-	
-	req, err := http.NewRequest("GET", companyListURL, nil)
-	if err != nil {
-		return nil, err
+	w.Header().Set("Content-Type", "text/plain")
+	for sym, company := range s.m {
+		fmt.Fprintln(w, sym, company.Name)
 	}
-
-	cli := http.Client{}
-	res, err := cli.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	
-	body := res.Body
-	defer body.Close()
-
-	syms := make(map[string]Company)
-	rdr := csv.NewReader(body)
-	for {
-		rec, err := rdr.Read()
-		if err == io.EOF {
-			break
-		}
-		lastSale, _ := strconv.ParseFloat(rec[2], 32)
-		mktCap, _ := strconv.ParseFloat(rec[3], 64)
-		syms[rec[0]] = Company{
-			Symbol: rec[0],
-			Name: rec[1],
-			LastSale: float32(lastSale),
-			MarketCap: mktCap,
-			Sector: rec[6],
-			Industry: rec[7],
-		}
-		
-	}
-
-	return syms, nil
 }
