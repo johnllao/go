@@ -8,6 +8,7 @@ import "sync"
 import "fmt"
 
 var symURL = "http://www.batstrading.com/market_data/symbol_listing/csv"
+var port = flag.Int("port", 8080, "http port")
 
 type store struct {
 	sync.Mutex
@@ -35,6 +36,7 @@ func download() {
 	w := new(sync.WaitGroup)
 	q := make(chan int, 100)
 	for c := range list {
+		q <- 1
 		go save(q, w, c)
 	}
 	w.Wait()
@@ -42,7 +44,6 @@ func download() {
 
 func save(q chan int, w *sync.WaitGroup, c Company) {
 
-	q <- 1
 	w.Add(1)
 
 	s.Lock()
@@ -59,7 +60,7 @@ func start() {
 	router.HandleFunc("/symbols", symbols)
 	router.HandleFunc("/companies/", company)
 	server := http.Server{
-		Addr : ":8080",
+		Addr : fmt.Sprintf(":%d", *port),
 		Handler : router,
 	}
 	log.Println("http started")
@@ -97,3 +98,4 @@ func symbols(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, sym, company.Name)
 	}
 }
+
