@@ -21,7 +21,7 @@ func NewZipFileSystem(f string) ZipFileSystem {
 // Open opens a file
 func (fs ZipFileSystem) Open(name string) (http.File, error) {
 
-	r, err := zip.OpenReader(name)
+	r, err := zip.OpenReader(fs.filename)
 	if err != nil {
 		return nil, err
 	}
