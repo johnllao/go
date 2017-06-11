@@ -1,3 +1,4 @@
-bin/
-data/
 .vscode/
+bin/
+node_modules/
+*.exe
