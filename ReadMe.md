@@ -1,12 +1,15 @@
 # React Environment Setup
 
 * Install NodeJS
+  NodeJS is ncessary to have the npm to get all the packages necessary
 * Install Webpack
   `npm install webpack --save`
 * Install Babel
   `npm install babel-core babel-loader babel-preset-es2015 babel-preset-react --save`
 * Install React
   `npm install react react-dom --save`
+* Install Axios
+  `npm install axios --save`
 * Run `npm init` from the root directory
 * Confgure `package.json`
   ```

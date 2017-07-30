@@ -1,7 +1,10 @@
 package main
 
+import "encoding/json"
 import "fmt"
 import "net/http"
+import "strconv"
+import "sync"
 import "github.com/gorilla/mux"
 
 // Contact contains the contact details 
@@ -11,17 +14,32 @@ type Contact struct {
 	Email string `json:"email"`
 }
 
-var contacts = map[int]Contact{
-	1: Contact{ID: 1, Name: "John Lao"     , Email: "john.lao@gmail.com"},
-	2: Contact{ID: 2, Name: "Elmie Antonio", Email: "elmie_0320@yahoo.com"},
+var contacts = make([]*Contact, 0)
+var contactsMap = make(map[int]*Contact)
+
+var lock sync.Mutex
+
+func init() {
+	var c *Contact
+
+	c = &Contact{ ID:1, Name:"Bill Gates", Email:"bill@microsoft.com" }
+	contacts = append(contacts, c)
+	contactsMap[c.ID] = c
+
+	c = &Contact{ ID:2, Name:"Elon Musk", Email:"elon@tesla.com" }
+	contacts = append(contacts, c)
+	contactsMap[c.ID] = c
+
 }
 
 func main() {
 	
 	fs := http.StripPrefix("/contacts/", http.FileServer(http.Dir("./public"))) 
 	router := mux.NewRouter()
-	router.Handle("/contacts/", fs)
-	router.HandleFunc("/api/contacts", getcontacts)
+	router.PathPrefix("/contacts/").Handler(fs)
+	router.HandleFunc("/api/contacts/{id}", getcontact).Methods(http.MethodGet)
+	router.HandleFunc("/api/contacts", getcontacts).Methods(http.MethodGet)
+	router.HandleFunc("/api/contacts", addcontact).Methods(http.MethodPost)
 
 	var server http.Server
 	server.Addr = ":8080"
@@ -34,9 +52,60 @@ func main() {
 }
 
 func getcontacts(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		fmt.Fprintln(w, "GET method expected")
+
+	// marshal the struct into json
+	result, err := json.MarshalIndent(contacts, "", "  ")
+	if err != nil {
+		w.Header().Set("Content-Type:", "text/plain")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, err.Error())
 		return
 	}
+
+	// write the json result into the response
+	if _, err = w.Write(result); err != nil {
+		w.Header().Set("Content-Type:", "text/plain")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, err.Error())
+		return
+	}
+}
+
+func getcontact(w http.ResponseWriter, r *http.Request) {
+
+	id, err := strconv.Atoi(mux.Vars(r)["id"])
+	if err != nil {
+		w.Header().Set("Content-Type:", "text/plain")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, err.Error())
+	}
+
+	c, ok := contactsMap[id]
+	if !ok {
+		w.Header().Set("Content-Type:", "text/plain")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "Contact ID %d not found \n", id)
+		return
+	}
+
+	// marshal the struct into json
+	result, err := json.MarshalIndent(c, "", "  ")
+	if err != nil {
+		w.Header().Set("Content-Type:", "text/plain")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, err.Error())
+		return
+	}
+
+	// write the json result into the response
+	if _, err = w.Write(result); err != nil {
+		w.Header().Set("Content-Type:", "text/plain")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, err.Error())
+		return
+	}
+}
+
+func addcontact(w http.ResponseWriter, r *http.Request) {
+	
 }
