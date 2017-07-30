@@ -16,7 +16,7 @@ var AppModule = (function () {
 AppModule = __decorate([
     core_1.NgModule({
         imports: [platform_browser_1.BrowserModule],
-        declarations: [app_component_1.AppComponent],
+        declarations: [app_component_1.AppComponent, app_component_1.BudgetComponent, app_component_1.ProfileComponent],
         bootstrap: [app_component_1.AppComponent]
     })
 ], AppModule);

@@ -9,16 +9,43 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 var core_1 = require("@angular/core");
+var ProfileComponent = (function () {
+    function ProfileComponent() {
+    }
+    return ProfileComponent;
+}());
+ProfileComponent = __decorate([
+    core_1.Component({
+        selector: 'profile-component',
+        template: "<h4>Profile</h4>"
+    })
+], ProfileComponent);
+exports.ProfileComponent = ProfileComponent;
+var BudgetComponent = (function () {
+    function BudgetComponent() {
+    }
+    return BudgetComponent;
+}());
+BudgetComponent = __decorate([
+    core_1.Component({
+        selector: 'budget-component',
+        template: "<h4>Budget</h4>"
+    })
+], BudgetComponent);
+exports.BudgetComponent = BudgetComponent;
 var AppComponent = (function () {
     function AppComponent() {
         this.banner = 'Tomato Sauce';
     }
+    AppComponent.prototype.setContent = function (c) {
+        this.content = c;
+    };
     return AppComponent;
 }());
 AppComponent = __decorate([
     core_1.Component({
         selector: 'main-component',
-        template: "<h3 class=\"banner\">{{banner}}</h3>",
+        template: "\n  <h3 class=\"banner\">{{banner}}</h3>\n  <div>\n    <a href=\"#\" (click)=\"setContent('profile')\">Profile</a> |\n    <a href=\"#\" (click)=\"setContent('budget')\">Budget</a>\n  </div>\n  <profile-component *ngIf=\"content == 'profile'\"></profile-component>\n  <budget-component *ngIf=\"content == 'budget'\"></budget-component>",
     }),
     __metadata("design:paramtypes", [])
 ], AppComponent);
