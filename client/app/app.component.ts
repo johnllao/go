@@ -14,26 +14,14 @@ export class BudgetComponent {}
 
 @Component({
   selector: 'main-component',
-  template: `
-  <h3 class="banner">{{banner}}</h3>
-  <div>
-    <a href="#" (click)="setContent('profile')">Profile</a> |
-    <a href="#" (click)="setContent('budget')">Budget</a>
-  </div>
-  <profile-component *ngIf="content == 'profile'"></profile-component>
-  <budget-component *ngIf="content == 'budget'"></budget-component>`,
+  template: `<h3>{{title}}</h3>`,
 })
 export class AppComponent  
 { 
 
-  banner : string
-  content : string
+  title : string
 
   constructor() {
-    this.banner = 'Tomato Sauce'
-  }
-
-  setContent(c: string) {
-    this.content = c
+    this.title = 'Tomato Sauce'
   }
 }

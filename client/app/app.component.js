@@ -35,17 +35,14 @@ BudgetComponent = __decorate([
 exports.BudgetComponent = BudgetComponent;
 var AppComponent = (function () {
     function AppComponent() {
-        this.banner = 'Tomato Sauce';
+        this.title = 'Tomato Sauce';
     }
-    AppComponent.prototype.setContent = function (c) {
-        this.content = c;
-    };
     return AppComponent;
 }());
 AppComponent = __decorate([
     core_1.Component({
         selector: 'main-component',
-        template: "\n  <h3 class=\"banner\">{{banner}}</h3>\n  <div>\n    <a href=\"#\" (click)=\"setContent('profile')\">Profile</a> |\n    <a href=\"#\" (click)=\"setContent('budget')\">Budget</a>\n  </div>\n  <profile-component *ngIf=\"content == 'profile'\"></profile-component>\n  <budget-component *ngIf=\"content == 'budget'\"></budget-component>",
+        template: "<h3>{{title}}</h3>",
     }),
     __metadata("design:paramtypes", [])
 ], AppComponent);
