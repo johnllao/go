@@ -35,7 +35,7 @@ BudgetComponent = __decorate([
 exports.BudgetComponent = BudgetComponent;
 var AppComponent = (function () {
     function AppComponent() {
-        this.title = 'Tomato Sauce';
+        this.title = 'Welcome!';
     }
     return AppComponent;
 }());

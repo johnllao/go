@@ -11,8 +11,8 @@ func main() {
 	fmt.Println("Tomato Sauce")
 
 	router := mux.NewRouter()
-	router.PathPrefix("/").Handler(http.FileServer(http.Dir(".")))
 	router.HandleFunc("/api/help", helpHandle)
+	router.PathPrefix("/").Handler(http.FileServer(http.Dir(".")))
 
 	server := http.Server{
 		Addr    : ":8080",
