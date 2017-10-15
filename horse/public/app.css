@@ -1,0 +1,164 @@
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 10pt;
+    margin: 0;
+}
+
+.nav {
+    background-color: #9cf;
+    box-sizing: border-box;
+    height: 35px;
+}
+
+.nav h3 {
+    display: inline-block;
+    margin: 0;
+    padding-left: 5px;
+    padding-top: 5px;
+    vertical-align: top;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+}
+
+.nav ul {
+    display: inline-block; 
+    height: inherit; 
+    list-style-type: none;
+    vertical-align: top;
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    -webkit-padding-start: 20px;
+}
+
+.nav li {
+    display: inline-block;
+    height: inherit; 
+}
+
+.nav li a {
+    box-sizing: border-box;
+    display: inline-block;
+    height: inherit; 
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 7px;
+    text-decoration: none;
+}
+
+.nav li a:hover {
+    background-color: #69c;
+    color: #fff;
+}
+
+.form {
+    padding: 15px;
+}
+
+.form .form-group {
+    height: 30px;
+    padding: 3px 0;
+}
+
+.form .form-field {
+    box-sizing: border-box;
+    display: inline-block;
+    font-weight: bold;
+    height: inherit;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-top: 5px;
+    text-align: right;
+    vertical-align: top;
+}
+
+.form .form-control {
+    display: inline-block;
+    height: inherit;
+    vertical-align: top;
+}
+
+.form-control input {
+    border-color: #ddd;
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 10pt;
+    height: inherit;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: inherit;
+}
+
+.form-control button {
+    background-color: #9cf;
+    border: 0;
+    border-radius: 3px;
+    color: #fff;
+    cursor: pointer;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 10pt;
+    height: inherit;
+    width: inherit;
+}
+
+.form-control select {
+    border-color: #ddd;
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 10pt;
+    height: inherit;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: inherit;
+}
+
+.width-60 {
+    width: 60px;
+}
+
+.width-120 {
+    width: 120px;
+}
+
+.width-180 {
+    width: 120px;
+}
+
+.width-240 {
+    width: 240px;
+}
+
+.width-300 {
+    width: 300px;
+}
+
+.width-360 {
+    width: 360px;
+}
+
+.width-420 {
+    width: 420px;
+}
+
+.width-480 {
+    width: 480px;
+}
+
+.width-540 {
+    width: 540px;
+}
+
+.width-600 {
+    width: 600px;
+}
+
+.width-1200 {
+    width: 1200px;
+}
